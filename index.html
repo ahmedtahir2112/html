@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Program Transfer Planner</title>
+
+<style>
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #333;
+}
+
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #1e3c72;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #1e3c72;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #16325c;
+    transform: scale(1.05);
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+th {
+    background: #1e3c72;
+    color: white;
+    padding: 12px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+tr:hover {
+    background: #eef3ff;
+}
+
+
+.section-title {
+    margin-top: 30px;
+    font-size: 20px;
+    color: #1e3c72;
+}
+
+
+.yes {
+    color: green;
+    font-weight: bold;
+}
+
+.no {
+    color: red;
+    font-weight: bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Program Transfer Planner</h1>
+<p class="subtitle">Current Program: Computer Science</p>
+
+<div class="controls">
+    <div>
+        <label>Select Target Program:</label>
+        <select id="programSelect">
+            <option value="Computer Engineering">Computer Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Electrical Engineering">Electrical and Electronics Engineering</option>
+        </select>
+    </div>
+
+    <button onclick="transfer()">Transfer</button>
+</div>
+
+<div class="section-title">All Courses</div>
+<table>
+<thead>
+<tr>
+<th>Course</th>
+<th>Passed</th>
+</tr>
+</thead>
+<tbody id="courseTable"></tbody>
+</table>
+
+<div class="section-title">Equivalency Table</div>
+<table>
+<thead>
+<tr>
+<th>Your Course</th>
+<th>Equivalent Course</th>
+</tr>
+</thead>
+<tbody id="equivalencyTable"></tbody>
+</table>
+
+</div>
+
+<script>
+
+
+const courses = [
+    {name: "Introduction to Artificial Intelligence", passed: true},
+    {name: "Computer Organization", passed: true},
+    {name: "Calculus II", passed: false},
+    {name: "Computer and Society", passed: true},
+    {name: "Mathematical Foundations of Computing", passed: true},
+
+    {name: "Calculus I", passed: true},
+    {name: "Physics I", passed: true},
+    {name: "Programming Fundamentals", passed: true},
+    {name: "Data Structures", passed: false},
+    {name: "Discrete Mathematics", passed: true},
+    {name: "Algorithms", passed: false},
+    {name: "Computer Networks", passed: true},
+    {name: "Operating Systems", passed: true},
+
+   
+    {name: "Linear Algebra", passed: true},
+    {name: "Database Systems", passed: true},
+    {name: "Software Engineering", passed: true},
+    {name: "Artificial Intelligence", passed: true},
+    {name: "Web Development", passed: true}
+];
+
+
+function loadCourses() {
+    const table = document.getElementById("courseTable");
+
+    courses.forEach(course => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${course.name}</td>
+            <td class="${course.passed ? 'yes' : 'no'}">
+                ${course.passed ? "Yes" : "No"}
+            </td>
+        `;
+
+        table.appendChild(row);
+    });
+}
+
+loadCourses();
+
+
+function getEquivalent(course, program) {
+
+    const mappings = {
+
+        "Computer Engineering": {
+            "Introduction to Artificial Intelligence": "AI Systems",
+            "Computer Organization": "Computer Architecture",
+            "Programming Fundamentals": "C Programming",
+            "Computer Networks": "Computer Networks",
+            "Operating Systems": "Operating Systems",
+            "Database Systems": "Database Systems",
+            "Software Engineering": "Software Engineering",
+            "Mathematical Foundations of Computing": "Discrete Structures"
+        },
+
+        "Civil Engineering": {
+            "Calculus I": "Engineering Mathematics I",
+            "Calculus II": "Engineering Mathematics II",
+            "Physics I": "Engineering Physics",
+            "Linear Algebra": "Mathematics II",
+            "Mathematical Foundations of Computing": "Mathematics I"
+        },
+
+        "Electrical Engineering": {
+            "Physics I": "Physics for Engineers",
+            "Calculus I": "Advanced Calculus",
+            "Programming Fundamentals": "Embedded Programming",
+            "Computer Organization": "Digital Systems",
+            "Introduction to Artificial Intelligence": "Intelligent Systems"
+        }
+    };
+
+    return mappings[program][course] || "N/A";
+}
+
+
+function transfer() {
+    const program = document.getElementById("programSelect").value;
+    const table = document.getElementById("equivalencyTable");
+
+    table.innerHTML = "";
+
+    courses.forEach(course => {
+        if (course.passed) {
+
+            const equivalent = getEquivalent(course.name, program);
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${course.name}</td>
+                <td>${equivalent}</td>
+            `;
+
+            table.appendChild(row);
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
